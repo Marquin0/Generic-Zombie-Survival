@@ -21,7 +21,7 @@ public class PlayerController : NetworkBehaviour
     public Camera playerCamera;
     private Text gameStatusText;
 
-
+    private PlayerBuilder playerBuilder;
 
     private bool build = false;
 
@@ -40,6 +40,7 @@ public class PlayerController : NetworkBehaviour
         gameStatusText = gameStatusCanvas.Find("Text").gameObject.GetComponent<Text>();
         EnablePlayer();
         GameBoard.Playerlist.Add(gameObject);
+        playerBuilder = GetComponent<playerBuilder>();
     }
 
     void Update()
@@ -79,6 +80,26 @@ public class PlayerController : NetworkBehaviour
             onToggleRemote.Invoke(true);
     }
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+
+    }
+
+    [ClientRpc]
+    public void RpcUpdateGameStatusText(string text)
+    {
+        UpdateGameStatusText(text);
+    }
+
+    public void UpdateGameStatusText(string text)
+    {
+        if (gameStatusText == null)
+            return;
+
+        gameStatusText.text = text;
+    }
+
     private void Movement()
     {
         xVelocity = Input.GetAxis("Horizontal") * speed;
@@ -103,18 +124,22 @@ public class PlayerController : NetworkBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             builderScript.SwitchBuilding(0);
+            playerBuilder.SelectBulding(0);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             builderScript.SwitchBuilding(1);
+            playerBuilder.SelectBulding(1);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             builderScript.SwitchBuilding(2);
+            playerBuilder.SelectBulding(2);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             builderScript.SwitchBuilding(3);
+            playerBuilder.SelectBulding(3);
         }
     }
 
@@ -127,7 +152,8 @@ public class PlayerController : NetworkBehaviour
 
         if (!build && hit.collider != null && hit.collider.gameObject.layer == 9 && Input.GetMouseButtonUp(0))
         {
-            SetSelectedBuilding(hit.collider.gameObject);
+            //SetSelectedBuilding(hit.collider.gameObject);
+            SetSelectedBuilding(playerBuilder.GetSelectedBuilding().Gameobject);
         }
         else if (hit.collider == null && Input.GetMouseButton(0))
         {
@@ -147,6 +173,21 @@ public class PlayerController : NetworkBehaviour
         {
             build = false;
         }
+    }
+
+    private void UpdateBuildingPlacement()
+    {
+        if (!buildingPlacement.activeSelf) return;
+
+        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        var x = (int)(mousePosition.x / 0.3f);
+        var xoff = mousePosition.x - x * 0.3f;
+        var y = (int)(mousePosition.y / 0.3f);
+        var yoff = mousePosition.y - y * 0.3f;
+        Vector2 position = new Vector2(((x + (int)(xoff / 0.15f)) * 0.3f), ((y + (int)(yoff / 0.15f)) * 0.3f));
+
+        buildingPlacement.transform.position = position;
     }
 
     private void SetSelectedBuilding(GameObject selected)
@@ -173,39 +214,5 @@ public class PlayerController : NetworkBehaviour
                 selectedBuilding = null;
             }
         }
-    }
-
-    private void UpdateBuildingPlacement()
-    {
-        if (!buildingPlacement.activeSelf) return;
-
-        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        var x = (int)(mousePosition.x / 0.3f);
-        var xoff = mousePosition.x - x * 0.3f;
-        var y = (int)(mousePosition.y / 0.3f);
-        var yoff = mousePosition.y - y * 0.3f;
-        Vector2 position = new Vector2(((x + (int)(xoff / 0.15f)) * 0.3f), ((y + (int)(yoff / 0.15f)) * 0.3f));
-
-        buildingPlacement.transform.position = position;
-    }
-
-    [ClientRpc]
-    public void RpcUpdateGameStatusText(string text)
-    {
-        UpdateGameStatusText(text);
-    }
-
-    public void UpdateGameStatusText(string text)
-    {
-        if (gameStatusText == null)
-            return;
-
-        gameStatusText.text = text;
-    }
-
-    // Update is called once per frame
-    void FixedUpdate () {
-
     }
 }
