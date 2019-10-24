@@ -20,6 +20,7 @@ public class PlayerController : NetworkBehaviour
     private GameObject selectedBuilding;
     public Camera playerCamera;
     private Text gameStatusText;
+    private GameObject previousSelected;
 
     private PlayerBuilder playerBuilder;
 
@@ -32,7 +33,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] ToggleEvent onToggleRemote;
 
     // Use this for initialization
-    void Start() {
+    void Start()
+    {
         rigidbody2D = GetComponent<Rigidbody2D>();
         builderScript = GetComponent<PlayerBuilder>();
         buildingPlacement = builderScript.GetBuildingPlacement();
@@ -54,11 +56,14 @@ public class PlayerController : NetworkBehaviour
         MouseClick();
     }
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+
+    }
+
     void DisablePlayer()
     {
-        //if (isLocalPlayer)
-        //    mainCamera.SetActive(true);
-
         onToggleShared.Invoke(false);
 
         if (isLocalPlayer)
@@ -69,21 +74,12 @@ public class PlayerController : NetworkBehaviour
 
     void EnablePlayer()
     {
-        //if (isLocalPlayer)
-        //    mainCamera.SetActive(false);
-
         onToggleShared.Invoke(true);
 
         if (isLocalPlayer)
             onToggleLocal.Invoke(true);
         else
             onToggleRemote.Invoke(true);
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-
     }
 
     [ClientRpc]
@@ -109,8 +105,8 @@ public class PlayerController : NetworkBehaviour
         float xPercentage = totalVelocity == 0f ? 0 : xVelocity / totalVelocity;
         float yPrecentage = totalVelocity == 0f ? 0 : yVelocity / totalVelocity;
 
-        xVelocity = speed * xPercentage;
-        yVelocity = speed * yPrecentage;
+        xVelocity = speed * xPercentage * xVelocity;
+        yVelocity = speed * yPrecentage * yVelocity;
 
         rigidbody2D.velocity = new Vector2(xVelocity, yVelocity);
     }
@@ -141,10 +137,26 @@ public class PlayerController : NetworkBehaviour
             builderScript.SwitchBuilding(3);
             playerBuilder.SelectBulding(3);
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            builderScript.SwitchBuilding(4);
+            playerBuilder.SelectBulding(4);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            builderScript.SwitchBuilding(5);
+            playerBuilder.SelectBulding(5);
+        }
     }
 
     private void MouseClick()
     {
+        if (Input.GetMouseButtonUp(0))
+        {
+            build = false;
+            return;
+        }
+
         if (!Input.GetMouseButton(0) && !Input.GetMouseButtonUp(0)) return;
 
         Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -152,26 +164,23 @@ public class PlayerController : NetworkBehaviour
 
         if (!build && hit.collider != null && hit.collider.gameObject.layer == 9 && Input.GetMouseButtonUp(0))
         {
-            //SetSelectedBuilding(hit.collider.gameObject);
+            builderScript.CmdBuild(buildingPlacement.transform.position, builderScript.selectedBuilding);
+            build = true;
             SetSelectedBuilding(playerBuilder.GetSelectedBuilding().Gameobject);
         }
-        else if (hit.collider == null && Input.GetMouseButton(0))
+        else if (hit.collider == null && Input.GetMouseButton(0) && buildingPlacement.activeSelf)
         {
-            if (buildingPlacement.activeSelf)
-            {
-                builderScript.CmdBuild(buildingPlacement.transform.position, builderScript.selectedBuilding);
-                build = true;
-                SetSelectedBuilding(null);
-            }
+            builderScript.CmdBuild(buildingPlacement.transform.position, builderScript.selectedBuilding);
+            build = true;
+            SetSelectedBuilding(null);
         }
         else if (hit.collider == null || hit.collider.gameObject.layer != 9)
         {
             SetSelectedBuilding(null);
         }
-
-        if (Input.GetMouseButtonUp(0))
+        else
         {
-            build = false;
+            SetSelectedBuilding(builderScript.GetBuilding(selectedBuilding));
         }
     }
 
@@ -194,11 +203,16 @@ public class PlayerController : NetworkBehaviour
     {
         if (selected != null)
         {
-            if (selected == selectedBuilding)
+            switch (selected)
             {
-                SetSelectedBuilding(null);
-                return;
+                case selectedBuilding:
+                    SetSelectedBuilding(null);
+                    return;
+                case previousSelected:
+                    SetSelectedBuilding(previousSelected);
+                    break;
             }
+
             if (selectedBuilding != null)
             {
                 SetSelectedBuilding(null);
@@ -210,6 +224,13 @@ public class PlayerController : NetworkBehaviour
         {
             if (selectedBuilding != null)
             {
+                if (selectedBuilding == previousSelected)
+                {
+                    selectedBuilding.transform.Find("Menu").gameObject.SetActive(false);
+                    selectedBuilding = previousSelected;
+                    return;
+                }
+
                 selectedBuilding.transform.Find("Menu").gameObject.SetActive(false);
                 selectedBuilding = null;
             }
