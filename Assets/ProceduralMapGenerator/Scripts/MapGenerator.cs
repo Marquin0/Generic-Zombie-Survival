@@ -40,12 +40,12 @@ public class MapGenerator : MonoBehaviour
         {
             if (ItemSpawns.Sum(i => i.ItemSpawnCountPerSquareSize) > SquareSize)
                 throw new System.Exception("Die Globale ItemSpawnCountPerSquareSize variable darf nicht größer wie der SquareSize sein");
-            foreach(var tileType in TileTypes)
-                if(tileType.UniqueItemsForTileType.Sum(i => i.ItemSpawnCountPerSquareSize) > SquareSize)
+            foreach (var tileType in TileTypes)
+                if (tileType.UniqueItemsForTileType.Sum(i => i.ItemSpawnCountPerSquareSize) > SquareSize)
                     throw new System.Exception("Die ItemSpawnCountPerSquareSize variable für das Tile '" + tileType.TypeSprite.name + "' darf nicht größer wie der SquareSize sein");
 
             float totalitemSpawns = ItemSpawns.Sum(i => i.ItemSpawnCountPerSquareSize) + TileTypes.Sum(t => t.UniqueItemsForTileType.Sum(i => i.ItemSpawnCountPerSquareSize));
-            if(totalitemSpawns > mapWidth*mapHeight)
+            if (totalitemSpawns > mapWidth * mapHeight)
                 throw new System.Exception("Die gesamte Item spawn Anzahl ist zu hoch");
 
             cameraTransform = Camera.main.transform;
@@ -86,7 +86,7 @@ public class MapGenerator : MonoBehaviour
             }
             sprites[0] = BorderSprite;
 
-            availableSpawnPoints = new byte[mapWidth,mapHeight];
+            availableSpawnPoints = new byte[mapWidth, mapHeight];
 
             VoronoiMap voronoiMap = new VoronoiMap(TileTypes);
 
@@ -94,7 +94,7 @@ public class MapGenerator : MonoBehaviour
             map = voronoiMap.GenerateMap(mapWidth, mapHeight, VoronoiPointCount, out regions);
 
             //GenerateBorder();
-            
+
             SpawnItems(regions);
             refreshScreen(); //SpriteRenderer erneuern
 
@@ -130,35 +130,15 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-
-
-    //private void GenerateBorder()
-    //{
-    //    mapWidth += BorderSize * 2;
-    //    mapHeight += BorderSize * 2;
-
-    //    byte[,] mapWithBorder = new byte[mapWidth, mapHeight];
-
-    //    for(int x = BorderSize; x < mapWidth-BorderSize; x++)
-    //    {
-    //        for(int y = BorderSize; y < mapHeight-BorderSize; y++)
-    //        {
-    //            mapWithBorder[x, y] = map[x - BorderSize, y - BorderSize];
-    //        }
-    //    }
-
-    //    map = mapWithBorder;
-    //}
-
-    
     //ToDo: Implementieren, dass items nicht auf der gleichen stelle spawnen
     private void SpawnItems(Dictionary<VoronoiPoint, List<Vector2>> regions)
     {
         Dictionary<ItemSpawn, float> extraSpawnBuffer = new Dictionary<ItemSpawn, float>();
-        foreach(var region in regions)
+        foreach (var region in regions)
         {
-            TileType tileType = TileTypes[region.Key.TileIndex-1];
-            foreach (var item in tileType.UniqueItemsForTileType) {
+            TileType tileType = TileTypes[region.Key.TileIndex - 1];
+            foreach (var item in tileType.UniqueItemsForTileType)
+            {
                 float spawnCountInRegion = (float)(region.Value.Count / (float)SquareSize) * item.ItemSpawnCountPerSquareSize;
                 int spawnCountInRegionRounded = Mathf.RoundToInt(spawnCountInRegion);
                 if (!extraSpawnBuffer.ContainsKey(item))
@@ -166,7 +146,7 @@ public class MapGenerator : MonoBehaviour
 
                 extraSpawnBuffer[item] += spawnCountInRegion - spawnCountInRegionRounded;
 
-                if(spawnCountInRegion % 1 < 0.5f && extraSpawnBuffer[item] >= 1 - (spawnCountInRegion % 1))
+                if (spawnCountInRegion % 1 < 0.5f && extraSpawnBuffer[item] >= 1 - (spawnCountInRegion % 1))
                 {
                     spawnCountInRegionRounded++;
                     extraSpawnBuffer[item] -= 1 - (spawnCountInRegion % 1);
@@ -191,11 +171,11 @@ public class MapGenerator : MonoBehaviour
 
         int tileCount = mapWidth * mapHeight;
         List<Vector2> spawnPoints = new List<Vector2>();
-        foreach(var item in ItemSpawns)
+        foreach (var item in ItemSpawns)
         {
             float spawnCountForItem = (float)(tileCount) / (float)SquareSize * item.ItemSpawnCountPerSquareSize;
             spawnCountForItem = Mathf.RoundToInt(spawnCountForItem);
-            for(int i = 0; i < spawnCountForItem; i++)
+            for (int i = 0; i < spawnCountForItem; i++)
             {
                 bool spawned = false;
                 Vector2 randomSpawnLocation = new Vector2();
@@ -232,16 +212,7 @@ public class MapGenerator : MonoBehaviour
 
                 try
                 {
-                    spriteRenderer[x, y].sprite = sprites[map[x + posX, y + posY]];  //setzt jedes SpriteRenderer auf den aktuellen Wert der Map }
-                  /*  if(spriteRenderer[x, y].sprite.name == "water")
-                    {
-                        spriteRenderer[x, y].GetComponent<BoxCollider2D>().enabled = true;
-                        spriteRenderer[x, y].GetComponent<BoxCollider2D>().isTrigger = false;
-                        spriteRenderer[x, y].GetComponent<BoxCollider2D>().size = new Vector2(0.2f,0.2f);
-                        spriteRenderer[x, y].gameObject.AddComponent<Fishable>();
-                    }
-                    else { spriteRenderer[x, y].GetComponent<BoxCollider2D>().enabled = false; }*/
-  
+                    spriteRenderer[x, y].sprite = sprites[map[x + posX, y + posY]]; 
                 }
                 catch (System.Exception ex)
                 {

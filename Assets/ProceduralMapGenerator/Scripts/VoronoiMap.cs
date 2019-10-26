@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoronoiMap {
-
+public class VoronoiMap
+{
     Lottery<Number> lottery = new Lottery<Number>();
     private VoronoiPoint[] voronoiPoints;
     private Dictionary<VoronoiPoint, List<Vector2>> regions;
 
     public VoronoiMap(TileType[] tileTypes)
     {
-        for(byte i = 0; i < tileTypes.Length; i++)
+        for (byte i = 0; i < tileTypes.Length; i++)
         {
             lottery.Add(new Number() { Index = i }, tileTypes[i].Weight);
         }
@@ -24,7 +24,7 @@ public class VoronoiMap {
         regions = this.regions;
         return map;
     }
-    
+
     private void GenerateVoronoiPoints(int mapWidth, int mapHeight, int pointCount)
     {
         if (mapWidth * mapHeight < pointCount)
@@ -42,14 +42,14 @@ public class VoronoiMap {
 
             } while (VoronoiPointAlreadyExists(newPoint));
 
-            newPoint.TileIndex = (byte)(lottery.Draw().Index+1);//+1 weil der Index 0 für die Border reserviert ist
+            newPoint.TileIndex = (byte)(lottery.Draw().Index + 1);//+1 weil der Index 0 für die Border reserviert ist
             voronoiPoints[i] = newPoint;
         }
     }
 
     private bool VoronoiPointAlreadyExists(VoronoiPoint voronoiPoint)
     {
-        foreach(VoronoiPoint p in voronoiPoints)
+        foreach (VoronoiPoint p in voronoiPoints)
         {
             if (p == null)
                 return false;

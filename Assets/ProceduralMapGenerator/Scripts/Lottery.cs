@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Lottery<T> where T : class {
-    
+public class Lottery<T> where T : class
+{
     private List<Ticket<T>> tickets = new List<Ticket<T>>();
     private float weightCount = 0;
 
@@ -26,6 +26,13 @@ public class Lottery<T> where T : class {
         if (ti == null)
             return;
         Remove(ti);
+    }
+
+    public void Remove(int index)
+    {
+        var ticket = tickets[index];
+        weightCount -= ticket.Weight;
+        tickets.Remove(ticket);
     }
 
     public void SetList(List<Ticket<T>> tickets)
