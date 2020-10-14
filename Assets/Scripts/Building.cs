@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class Building : NetworkBehaviour {
-
+public class Building : NetworkBehaviour
+{
     public string name;
     public int costs = 10;
     public float life = 100;
@@ -25,6 +25,26 @@ public class Building : NetworkBehaviour {
     public int upgradeCosts = 50;
     public float upgradeCostsScale = 2f;
     public float lifeScale = 2f;
+    public int levelStep = 1;
+    public int maxLevelStep = 10;
+
+    // Use this for initialization
+    public virtual void Start()
+    {
+        GetComponent<Health>().SetMaxHealth(life);
+        menu = transform.Find("Menu").gameObject;
+        var menuUpgrade = menu.transform.Find("Upgrade");
+        menuUpgradeText = menuUpgrade.Find("Text").gameObject.GetComponent<Text>();
+        menuUpgradeCosts = menuUpgrade.Find("UpgradeCosts").gameObject.GetComponent<Text>();
+
+        var menuPanel = menu.transform.Find("Panel");
+        menuLblName = menuPanel.Find("lblName").gameObject.GetComponent<Text>();
+        menuTxtRange = menuPanel.Find("txtRange").gameObject.GetComponent<Text>();
+        menuTxtDmg = menuPanel.Find("txtDmg").gameObject.GetComponent<Text>();
+        menuTxtSpeed = menuPanel.Find("txtSpeed").gameObject.GetComponent<Text>();
+
+        UpdateMenu();
+    }
 
     [Command]
     public void CmdUpgrade()
@@ -44,14 +64,14 @@ public class Building : NetworkBehaviour {
     {
         Upgrade();
     }
-    
+
     public virtual void Upgrade()
     {
         if (currentLvl >= maxLvl)
             return;
 
-        currentLvl++;
-        upgradeCosts = (int)(upgradeCosts * upgradeCostsScale * currentLvl);
+        currentLvl += levelStep;
+        upgradeCosts = (int)(upgradeCosts * upgradeCostsScale * currentLvl * levelStep);
         life = (int)(life * lifeScale * currentLvl);
         GetComponent<Health>().SetMaxHealth(life);
 
@@ -60,9 +80,9 @@ public class Building : NetworkBehaviour {
 
     public virtual void UpdateMenu()
     {
-        menuLblName.text = name + " " + "Lvl " + currentLvl;
-        
-        if(currentLvl == maxLvl)
+        menuLblName.text = name + " " + "Lvl " + currentLvl + $" (Levelstep: {levelStep})";
+
+        if (currentLvl == maxLvl)
         {
             menuUpgradeText.text = "Max Level";
             menuUpgradeCosts.text = "";
@@ -73,25 +93,9 @@ public class Building : NetworkBehaviour {
         }
     }
 
-    // Use this for initialization
-    public virtual void Start () {
-        GetComponent<Health>().SetMaxHealth(life);
-        menu = transform.Find("Menu").gameObject;
-        var menuUpgrade = menu.transform.Find("Upgrade");
-        menuUpgradeText = menuUpgrade.Find("Text").gameObject.GetComponent<Text>();
-        menuUpgradeCosts = menuUpgrade.Find("UpgradeCosts").gameObject.GetComponent<Text>();
-
-        var menuPanel = menu.transform.Find("Panel");
-        menuLblName = menuPanel.Find("lblName").gameObject.GetComponent<Text>();
-        menuTxtRange = menuPanel.Find("txtRange").gameObject.GetComponent<Text>();
-        menuTxtDmg = menuPanel.Find("txtDmg").gameObject.GetComponent<Text>();
-        menuTxtSpeed = menuPanel.Find("txtSpeed").gameObject.GetComponent<Text>();
-
-        UpdateMenu();
+    public virtual void IncreaseLevelStep(int levelIncrease)
+    {
+        levelStep += levelIncrease;
+        levelStep %= maxLevelStep;
     }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
 }

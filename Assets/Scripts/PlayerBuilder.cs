@@ -21,6 +21,8 @@ public class PlayerBuilder : NetworkBehaviour {
     public GameObject[] buildings = new GameObject[3];
     private List<GameObject> placedBuildings = new List<GameObject>();
     private List<GameObject> buildingBtnList = new List<GameObject>();
+
+    private BuildingSelector buildingSelector;
     
 	// Use this for initialization
 	void Start () {
@@ -59,6 +61,8 @@ public class PlayerBuilder : NetworkBehaviour {
             newBtn.transform.SetParent(buildMenuPanel);
             newBtn.transform.localScale = new Vector3(1, 1, 1);
         }
+
+        buildingSelector = new BuildingSelector(buildings.Select(x => x.GetComponent<buildings>()));
     }
 	
 	// Update is called once per frame
@@ -140,5 +144,15 @@ public class PlayerBuilder : NetworkBehaviour {
         placedBuildings.Add(newBuilding);
         GameBoard.Buildings.Add(newBuilding);
         NetworkServer.Spawn(newBuilding);
+    }
+
+    public void SelectBulding(int index)
+    {
+        buildingSelector.SetSelection(index);
+    }
+
+    public Bulding GetSelectedBuilding()
+    {
+        buildingSelector.GetSelectedBuilding();
     }
 }

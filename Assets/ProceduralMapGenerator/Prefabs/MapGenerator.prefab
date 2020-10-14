@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1129099378716948}
+  m_IsPrefabParent: 1
+--- !u!1 &1129099378716948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4102341729883800}
+  - component: {fileID: 114642249156490456}
+  m_Layer: 0
+  m_Name: MapGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1218853244724616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4390242469405884}
+  m_Layer: 0
+  m_Name: TileMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4102341729883800
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1129099378716948}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4390242469405884}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4390242469405884
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1218853244724616}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4102341729883800}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114642249156490456
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1129099378716948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adab5a4bd6c87734c998a8274b454e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapWidth: 100
+  mapHeight: 100
+  VoronoiPointCount: 100
+  spriteGroesse: 0.2
+  TileTypes:
+  - TypeSprite: {fileID: 21300000, guid: e52ad75b6fb61f14a88da2ea2425e28b, type: 3}
+    Weight: 3
+    ItemSpawnChance: 0.0001
+    UniqueItemForTileType:
+    - ItemPrefab: {fileID: 1154523589252610, guid: 29fef7c5de556844c8d941db76348922,
+        type: 2}
+      Weight: 1
+  - TypeSprite: {fileID: 21300000, guid: 8ccb2662c546f97419f782cf2e166d1b, type: 3}
+    Weight: 1
+    ItemSpawnChance: 0.0001
+    UniqueItemForTileType: []
+  - TypeSprite: {fileID: 21300000, guid: 157f8e56851fc564dbeb6626d3d15542, type: 3}
+    Weight: 0.8
+    ItemSpawnChance: 0.0001
+    UniqueItemForTileType:
+    - ItemPrefab: {fileID: 1984238657104588, guid: 7a31078501cebec45aa5d6d7e5ce201d,
+        type: 2}
+      Weight: 1
+  - TypeSprite: {fileID: 21300000, guid: a3ccf8d83ca108542839513f6c3ff5fa, type: 3}
+    Weight: 0.2
+    ItemSpawnChance: 0.5
+    UniqueItemForTileType: []
+  BorderSprite: {fileID: 21300000, guid: a3ccf8d83ca108542839513f6c3ff5fa, type: 3}
+  ItemSpawnChance: 0.0001
+  ItemSpawns:
+  - ItemPrefab: {fileID: 1683702065156024, guid: 086ebf34d72bf7245a274e5e25ecffc6,
+      type: 2}
+    Weight: 1
+  tile: {fileID: 1054342790953782, guid: 73cc97ba0cf1c4a4ca428a675a2edbab, type: 2}
+  parent: {fileID: 4390242469405884}
+  ShowWholeMap: 0
