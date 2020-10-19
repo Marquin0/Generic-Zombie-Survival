@@ -15,6 +15,7 @@ public class TeleportController : MonoBehaviour {
     private bool leftClicking = false;
     private GameObject teleportLocation;
     private Vector3? oldPosition;
+    private float rndFactorX = 5, randFactorY = 5;
 
     public Image crosshair;
 
@@ -60,15 +61,15 @@ public class TeleportController : MonoBehaviour {
             if (teleportLocation != null && teleportLocation.activeSelf)
             {
                 oldPosition = transform.position;
-                transform.position = teleportLocation.transform.position + new Vector3(0, .5f, 0);
+                transform.position = teleportLocation.transform.position + new Vector3(Math.NextRandom(rndFactorX), Math.NextRandom(randFactorY), 0);
                 nextTeleportIn = delayTillNextTeleport;
             }
             teleportLocation.SetActive(false);
         }
         if(Input.GetMouseButtonDown(1) && oldPosition.HasValue)
         {
-            transform.position = oldPosition.Value;
-            oldPosition = null;
+            oldPosition = oldPosition.Value;
+            transform.position = oldPosition;
             nextTeleportIn = delayTillNextTeleport;
         }
 

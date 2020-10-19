@@ -21,6 +21,7 @@ public class PlayerController : NetworkBehaviour
     public Camera playerCamera;
     private Text gameStatusText;
     private GameObject previousSelected;
+    private TeleportController teleportController;
 
     private PlayerBuilder playerBuilder;
 
@@ -43,6 +44,7 @@ public class PlayerController : NetworkBehaviour
         EnablePlayer();
         GameBoard.Playerlist.Add(gameObject);
         playerBuilder = GetComponent<playerBuilder>();
+        teleportController = GetComponent<TeleportController>();
     }
 
     void Update()
@@ -182,6 +184,10 @@ public class PlayerController : NetworkBehaviour
         {
             SetSelectedBuilding(builderScript.GetBuilding(selectedBuilding));
         }
+    }
+
+    private void Teleport() {
+        teleportController.Update();
     }
 
     private void UpdateBuildingPlacement()

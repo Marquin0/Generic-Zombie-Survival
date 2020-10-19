@@ -10,6 +10,8 @@ public class Teleporter : MonoBehaviour {
     public bool inlcudeOffset = false;
     public bool ignoreFirstTrigger = false;
     public int delay = 0;
+    public float cooldown = 10f;
+    public float lastTeleport = 0;
     public Transform teleportPosition;
     
     private void OnTriggerEnter(Collider other)
@@ -28,12 +30,15 @@ public class Teleporter : MonoBehaviour {
 
     public void Teleport(GameObject gameObject)
     {
-        StartCoroutine(TeleportObject(gameObject));
+        if(lastTeleport <= 0) {
+            StartCoroutine(TeleportObject(gameObject));
+        }
     }
 
     private IEnumerator TeleportObject(GameObject other)
     {
         yield return new WaitForSeconds(delay);
+        lastTeleport = cooldown;
 
         Vector3 offset = Vector3.zero;
         if (inlcudeOffset)
